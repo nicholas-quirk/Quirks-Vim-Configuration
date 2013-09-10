@@ -34,6 +34,8 @@ set noswapfile
 set colorcolumn=80
 set hidden
 
+let mapleader = ","
+
 " Highlight current line only in insert mode.
 autocmd InsertLeave * set nocursorline
 autocmd InsertEnter * set cursorline
@@ -49,7 +51,7 @@ else
     set background=light
 endif
 
-colorscheme blackboard
+colorscheme quirky
 
 " ============================================================================
 "                       Global Styles
@@ -210,6 +212,10 @@ vmap <C-Down> ]egv
 " Visually select the text that was last edited/pasted.
 nmap gV `[v`]
 
+" Visual mode search
+xnoremap * :<C-u>call <SID>VSetSearch()<CR>/<C-R>=@/<CR><CR>
+xnoremap # :<C-u>call <SID>VSetSearch()<CR>?<C-R>=@/<CR><CR>
+
 " ----------------------------------------------------------------------------
 "                       Clojure
 " ----------------------------------------------------------------------------
@@ -245,6 +251,7 @@ if has("autocmd")
     " JavaScript settings.
     autocmd FileType javascript set omnifunc=javascriptcomplete#CompleteJS
     autocmd FileType javascript setlocal ts=4 sts=4 sw=4 noexpandtab textwidth=0
+    autocmd FileType javascript compiler nodelint
 
     " Haskell settings.
     autocmd FileType haskell setlocal tabstop=8 expandtab softtabstop=4 shiftwidth=4 smarttab shiftround nojoinspaces
@@ -327,6 +334,13 @@ function! <SID>SynStack()
   endif
   echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
 endfunc
+
+" Visual search mode searches using the entire selection.
+function! s:VSetSearch()
+    let temp = @s
+    norm! gv"sy
+    let @/ = '\V' . substitute(escape(@s, '/\'), '\n', '\\n', 'g') let @s = temp
+endfunction
 
 " ============================================================================
 "                       Commands not in Muscle Memory
