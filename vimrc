@@ -278,6 +278,9 @@ if has("autocmd")
     " Source vimrc changes when this file is saved.
     autocmd bufwritepost .vimrc source $MYVIMRC
 
+    " This could be dangerous!
+    autocmd BufWritePre * :%s/\s\+$//e
+
 endif
 
 " ============================================================================
@@ -341,6 +344,15 @@ function! s:VSetSearch()
     let temp = @s
     norm! gv"sy
     let @/ = '\V' . substitute(escape(@s, '/\'), '\n', '\\n', 'g') let @s = temp
+endfunction
+
+" Remove goofy quote characters.
+command! -nargs=* NormalizeQuote call NormalizeQuote()
+function! NormalizeQuote()
+    :silent! %s/”/"/g
+    :silent! %s/“/"/g
+    :silent! %s/’/'/g
+    :silent! %s/‘/'/g
 endfunction
 
 " ============================================================================
